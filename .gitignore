@@ -176,3 +176,8 @@ cython_debug/
 # Datasets
 afrisent-semeval-2023
 NaijaSenti
+
+data/
+
+*.csv
+*.tsv
