@@ -20,8 +20,9 @@ from tensorflow.keras.utils import to_categorical
 class ModelEncapsulator:
     """Encapsulates models with train, fit and predict methods."""
 
-    def __init__(self, model):
+    def __init__(self, model, name: str = "DefaultModelName"):
         self.model = model
+        self.name = name
 
     def predict(self, X):
         """Predict labels for features X."""
@@ -42,8 +43,9 @@ class ModelEncapsulator:
 class BasicModelEncapsulator(ModelEncapsulator):
     """Encapsulates models with train, fit and predict methods."""
 
-    def __init__(self, model):
+    def __init__(self, model, name: str = "BasicModel"):
         self.model = model
+        self.name = name
 
     def predict(self, X):
         """Predict labels for features X."""
@@ -59,17 +61,20 @@ class BasicModelEncapsulator(ModelEncapsulator):
         self.fit(X_train, y_train)
         predictions = self.predict(X_test)
         accuracy = accuracy_score(y_test, predictions)
-        report = classification_report(y_test, predictions)
+        report = classification_report(y_test, predictions, output_dict=True)
         return accuracy, report
 
 
 class NeuralNetworkModel(ModelEncapsulator):
     """Neural network model designed for TF-IDF features."""
 
-    def __init__(self, input_dim: int, num_classes: int = 3):
+    def __init__(
+        self, input_dim: int, num_classes: int = 3, name: str = "NeuralNetworkModel"
+    ):
         self.input_dim = input_dim
         self.num_classes = num_classes
         self.model = self._build_model()
+        self.name = name
 
     def _build_model(self):
         """Build neural network for TF-IDF features."""
@@ -131,15 +136,24 @@ class NeuralNetworkModel(ModelEncapsulator):
         Perform the training and evaluation pipeline.
         Returns accuracy and classification report.
         """
+        label_mapping = {0: "neutral", 1: "positive", 2: "negative"}
+        ohe_labels = [
+            0 if label == "neutral" else 1 if label == "positive" else 2 for label in y
+        ]
+
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.3, random_state=42
+            X, ohe_labels, test_size=0.3, random_state=42
         )
 
         self.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
 
         predictions = self.predict(X_test)
 
-        accuracy = accuracy_score(y_test, predictions)
-        report = classification_report(y_test, predictions)
+        # Map integer predictions back to string labels
+        y_test_str = [label_mapping[label] for label in y_test]
+        predictions_str = [label_mapping[label] for label in predictions]
+
+        accuracy = accuracy_score(y_test_str, predictions_str)
+        report = classification_report(y_test_str, predictions_str, output_dict=True)
 
         return accuracy, report
