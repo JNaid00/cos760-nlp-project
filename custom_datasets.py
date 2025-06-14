@@ -1,10 +1,29 @@
 import os
 import pandas as pd
+import subprocess
 from typing import Dict, List, Optional
 
 from constants import LOCAL_DIR_NS, NS_LANGUAGES
 
+REPO_URL_NS = "https://github.com/hausanlp/NaijaSenti.git"
+LOCAL_DIR_NS = "NaijaSenti"
 
+REPO_URL_AS = "https://github.com/afrisenti-semeval/afrisent-semeval-2023.git"
+LOCAL_DIR_AS = "afrisent-semeval-2023"
+
+
+def clone_repo(repo_url: str, local_dir: str) -> None:
+    if os.path.isdir(local_dir):
+        print("Repository exists. Updating...")
+        subprocess.run(["git", "-C", local_dir, "pull", "origin", "main"], check=True)
+    else:
+        print("Repository not found. Cloning...")
+        subprocess.run(["git", "clone", repo_url], check=True)
+ 
+clone_repo(REPO_URL_NS, LOCAL_DIR_NS)
+clone_repo(REPO_URL_AS, LOCAL_DIR_AS)
+ 
+ 
 class SplitSet:
     """
     Holds the train, test, dev splits and stopwords for a single language.
@@ -97,3 +116,7 @@ def load_local_datasets(
         )
         dataset.add_language(lang, split_set)
     return dataset
+
+ns_dataset: MultiLangDataset = load_local_datasets(local_base_dir=LOCAL_DIR_NS + '/data/annotated_tweets', languages=NS_LANGUAGES)
+ 
+as_dataset: MultiLangDataset = load_local_datasets(local_base_dir=f'afrisent-semeval-2023/data', languages=NS_LANGUAGES,)

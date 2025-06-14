@@ -1,6 +1,7 @@
 import os
 import re
 from pandas import DataFrame
+from sklearn.model_selection import train_test_split
 from tokenizers import Tokenizer as WPTokenizer
 from tokenizers.models import WordPiece
 from tokenizers.trainers import WordPieceTrainer
@@ -9,6 +10,8 @@ from tokenizers.normalizers import Sequence, Lowercase, NFD, StripAccents
 import sentencepiece as spm
 from sklearn.feature_extraction.text import CountVectorizer
 import os
+
+from custom_vectorizers import initialise_tfidf_vectorizer
 
 def get_tokenizer(
     df: DataFrame,
@@ -58,6 +61,61 @@ def wordpiece_tokenize_dataframe(
     df["tokenized_tweets"] = df["tweet"].apply(lambda x: tokenizer.encode(x).tokens)
     df["token_ids"] = df["tweet"].apply(lambda x: tokenizer.encode(x).ids)
     return df
+
+class NeuralNetworkInput:
+    def __init__(self, X_train, y_train, X_test, y_test, num_classes, num_features):
+        self.X_train = X_train
+        self.y_train = y_train
+        self.X_test = X_test
+        self.y_test = y_test
+        self.num_classes = num_classes
+        self.num_features = num_features
+
+
+    def get_dense_X_train(self):
+        X_train = self.X_train.toarray()
+        return X_train.astype(np.float32)
+
+    def get_dense_X_test(self):
+        X_test = self.X_test.toarray()
+        return X_test.astype(np.float32)
+    def get_input_shape(self):
+        return (self.X_train.shape[1],)
+
+    def get_num_classes(self):
+        return self.num_classes
+
+    def get_num_features(self):
+        return self.num_features
+        
+def get_wordpiece_tokeized_data(df, vocab_size=None, vectorizer_kwargs: Optional[Dict] = None,tweet_column: str = "tweet") -> NeuralNetworkInput:
+    tokenizer = get_tokenizer(df=df, vocab_size=vocab_size, tweet_column=tweet_column)
+
+    train_df = df
+
+    # train_df = encode_labels(train_df)
+
+    # Naive Bayes with wordpiece tokenized data
+    wp_train_df = wordpiece_tokenize_dataframe(train_df, tokenizer, )
+
+    wp_X_train_list = wp_train_df['tokenized_tweets'].tolist()
+
+    # join sub lists into strings
+    wp_X_train_list = [' '.join(tokens) for tokens in wp_X_train_list]
+
+
+    wp_y_train = wp_train_df['label_encoded'].tolist()
+
+    if vectorizer_kwargs is None:
+        vectorizer_kwargs = {}
+    tfidf_wp_train, vectorizer_wp = initialise_tfidf_vectorizer(wp_X_train_list, **vectorizer_kwargs)
+
+
+    wp_tfidf_features = tfidf_wp_train.shape[1]  # Number of TF-IDF features
+    wp_num_classes = len(np.unique(wp_y_train)) 
+
+    X_train, X_test, y_train, y_test = train_test_split(tfidf_wp_train, wp_y_train, test_size=0.3, random_state=42)
+    return NeuralNetworkInput(X_train, y_train, X_test, y_test, wp_num_classes, wp_tfidf_features)
 
 
 def get_sentencepiece_tokenizer(

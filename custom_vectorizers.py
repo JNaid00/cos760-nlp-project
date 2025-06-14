@@ -1,4 +1,11 @@
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from constants import VectorizerEnum
+
+def get_vectorizer(vec: VectorizerEnum):
+    if vec == VectorizerEnum.TFIDF:
+        return initialise_tfidf_vectorizer
+    
+    return initialise_count_vectorizer
 
 
 def initialise_tfidf_vectorizer(data, ngram=None, max_features=None):
