@@ -83,15 +83,17 @@ class NeuralNetworkModel(ModelEncapsulator):
         model.add(Input(shape=(self.input_dim,)))  # ✅ Replaces input_dim in Dense
 
         # Dense layers for TF-IDF input
-        model.add(Dense(512))
+        model.add(Dense(128))
         model.add(BatchNormalization())
         model.add(Activation("relu"))
 
         model.add(Dropout(0.4))
-        model.add(Dense(256))
+        model.add(Dense(128))
         model.add(BatchNormalization())
         model.add(Activation("relu"))
         model.add(Dropout(0.3))
+        model.add(Dense(64))
+        model.add(BatchNormalization())
         model.add(Dense(self.num_classes, activation="softmax"))
 
         model.compile(
@@ -131,7 +133,7 @@ class NeuralNetworkModel(ModelEncapsulator):
         predictions = self.model.predict(X)
         return np.argmax(predictions, axis=-1)
 
-    def perform_pipeline(self, X, y, epochs=10, batch_size=32):
+    def perform_pipeline(self, X, y, epochs=30, batch_size=32):
         """
         Perform the training and evaluation pipeline.
         Returns accuracy and classification report.
