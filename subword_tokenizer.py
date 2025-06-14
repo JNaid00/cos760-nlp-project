@@ -10,7 +10,12 @@ import sentencepiece as spm
 from sklearn.feature_extraction.text import CountVectorizer
 import os
 
-def get_tokenizer(df: DataFrame, save_tokenizer: bool = False) -> WPTokenizer:
+def get_tokenizer(
+    df: DataFrame,
+    save_tokenizer: bool = False,
+    vocab_size: int = 8000,
+    tweet_column: str = "tweet",
+) -> WPTokenizer:
     """
     Returns the WordPiece tokenizer.
     """
@@ -19,11 +24,13 @@ def get_tokenizer(df: DataFrame, save_tokenizer: bool = False) -> WPTokenizer:
     tokenizer.pre_tokenizer = Whitespace()
 
     trainer = WordPieceTrainer(
-        vocab_size=8000, special_tokens=["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"]
+        # vocab_size=12000, special_tokens=["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"]
+        vocab_size=vocab_size,
+        special_tokens=["[UNK]"],
     )
 
     # Collect all tweets into a single list for training
-    tweets = df["tweet"].tolist()
+    tweets = df[tweet_column].tolist()
     tokenizer.train_from_iterator(tweets, trainer)
     if save_tokenizer:
         # Save the tokenizer to a file
