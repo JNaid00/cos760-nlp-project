@@ -39,6 +39,13 @@ class ModelEncapsulator:
         """
         raise NotImplementedError("This method should be implemented by subclasses.")
 
+    def pipeline(self, X_train, y_train, X_test, y_test):
+        """
+        Perform the training and evaluation pipeline.
+        Returns accuracy and classification report.
+        """
+        raise NotImplementedError("This method should be implemented by subclasses.")
+
 
 class BasicModelEncapsulator(ModelEncapsulator):
     """Encapsulates models with train, fit and predict methods."""
@@ -63,6 +70,17 @@ class BasicModelEncapsulator(ModelEncapsulator):
         accuracy = accuracy_score(y_test, predictions)
         report = classification_report(y_test, predictions, output_dict=True)
         return accuracy, report
+
+    def pipeline(self, X_train, y_train, X_test, y_test) -> tuple[float, dict]:
+        """
+        Perform the training and evaluation pipeline.
+        Returns accuracy and classification report.
+        """
+        self.fit(X_train, y_train)
+        predictions = self.predict(X_test)
+        # accuracy = accuracy_score(y_test, predictions)
+        report = classification_report(y_test, predictions, output_dict=True)
+        return 0, report
 
 
 class NeuralNetworkModel(ModelEncapsulator):

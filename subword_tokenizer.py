@@ -3,6 +3,7 @@ import re
 from typing import Dict, Optional
 import numpy as np
 from pandas import DataFrame
+from typing import Optional, Dict
 from sklearn.model_selection import train_test_split
 from tokenizers import Tokenizer as WPTokenizer
 from tokenizers.models import WordPiece
