@@ -38,7 +38,7 @@ def get_tokenizer(
     )
 
     # Collect all tweets into a single list for training
-    tweets = df[tweet_column].tolist()
+    tweets = df['tweet'].tolist()
     tokenizer.train_from_iterator(tweets, trainer)
     if save_tokenizer:
         # Save the tokenizer to a file
