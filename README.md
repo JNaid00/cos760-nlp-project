@@ -39,9 +39,10 @@ For more details and access to the dataset, visit the official repository:
 |------|-------------|
 | `final.ipynb` | The complete experimental notebook containing training, evaluation, and commentary. |
 | `final_script.py` | A script version of the final model for running from the command line. |
+| `hyperparameter_script.ipynb` | A Jupyter Notebook designed for experimenting with hyperparameter tuning |
 | `requirements.txt` | List of Python dependencies required to run the project. |
-| `[All other].py files` | Provide functionality or data the final notebook or script can import from and use.
-| `/experimentation_scripts/*` | Scripts used in the experimentation phase of the project and archived in this folder.
+| `[All other].py files` | Provide functionality or data the final notebook or script can import from and use. |
+| `/experimentation_scripts/*` | Scripts used in the experimentation phase of the project and archived in this folder. |
 ---
 
 ## 🛠️ Getting Started
@@ -83,7 +84,6 @@ All results are saved in the `output/` directory, organized by model:
 
 ```
 output/
-│
 ├── logistic_regression/
 ├── naive_bayes/
 └── neural_network/
