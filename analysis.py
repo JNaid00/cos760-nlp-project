@@ -9,7 +9,6 @@ def compare_results(
     model: str = "default model",
     lang: str = "default language",
 ):
-    # Convert to DataFrames
     df = pd.DataFrame(normal_result).transpose()
     subword_df = pd.DataFrame(subword_result).transpose()
 
@@ -20,11 +19,9 @@ def compare_results(
     print(subword_df.round(3))
     print("--------------------------------------------------")
 
-    # Labels and metrics
     labels = ["negative", "neutral", "positive"]
     metrics = ["precision", "recall", "f1-score"]
 
-    # Create class-level breakdown and delta DataFrame
     data = []
     for label in labels:
         row = {"class": label}
@@ -39,8 +36,7 @@ def compare_results(
 
     df = pd.DataFrame(data)
 
-    # Show class-level breakdown
-    print("\n📊 Class-Level Breakdown with Deltas:")
+    print("\nClass-Level Breakdown with Deltas:")
     print(
         df[
             [
@@ -57,16 +53,12 @@ def compare_results(
             ]
         ]
     )
-
-    # Create heatmap of deltas
     heatmap_data = df.set_index("class")[[f"diff_{m}" for m in metrics]]
     plt.figure(figsize=(8, 4))
     sns.heatmap(heatmap_data, annot=True, cmap="coolwarm", center=0)
     plt.title("🔥 Performance Delta Heatmap (Subword - Normal)")
-    plt.tight_layout()
+    # plt.tight_layout()
     plt.show()
-
-    # Accuracy and macro/weighted averages
     summary = {
         "Accuracy": {
             "Normal": normal_result["accuracy"],
@@ -87,23 +79,14 @@ def compare_results(
         },
     }
     summary_df = pd.DataFrame(summary).T
-    print("\n✅ Overall Summary:")
+    print("\nOverall Summary:")
     print(summary_df)
 
-    # Final Conclusion
-    print("\n🧠 Final Conclusion:")
+    print("\nFinal Conclusion:")
     if summary["Accuracy"]["Diff"] < 0:
-        print("→ Normal tokenization achieves better overall accuracy.")
+        print("Normal tokenization achieves better overall accuracy.")
     else:
-        print("→ Subword tokenization achieves better overall accuracy.")
-
-    print(
-        "→ Class-wise, Subword tokenization improves recall for 'negative' but underperforms on 'neutral' and 'positive' in both recall and F1."
-    )
-    print(
-        "→ Overall, normal tokenization provides more balanced and accurate classification."
-    )
-
+        print("Subword tokenization achieves better overall accuracy.")
     # End print
     print("\nAnalysis complete.")
 
