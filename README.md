@@ -74,3 +74,26 @@ jupyter notebook final.ipynb
 ```bash
 python final_script.py
 ```
+
+---
+
+## 📊 Results
+
+All results are saved in the `output/` directory, organized by model:
+
+```
+output/
+│
+├── logistic_regression/
+├── naive_bayes/
+└── neural_network/
+```
+
+Each subfolder contains `.csv` files representing performance on different languages and preprocessing types:
+
+- **lg_ / nb_ / nn_** → Model prefix (Logistic Regression, Naive Bayes, Neural Network)
+- **hau / ibo / yor / pcm** → Language (Hausa, Igbo, Yoruba, Pidgin)
+- **bow / tfidf / sp / wp** → Feature type: Bag of Words, TF-IDF, SentencePiece, WordPiece
+- **_no_clean** → Indicates uncleaned input data
+
+> **Note:** All Neural Network (NN) models were run using only TF-IDF as a vectorizer.
